@@ -35,7 +35,7 @@ export default function HomePage() {
   return (
     <Container maxWidth="sm" sx={{ mt: 4 }}>
       <Typography variant="h4" gutterBottom align="center">
-        📘 Syllabus Study Chatbot
+        📘 Course Study Chatbot
       </Typography>
 
       <Paper elevation={3} sx={{ p: 2, height: 400, overflowY: "auto", mb: 2 }}>
