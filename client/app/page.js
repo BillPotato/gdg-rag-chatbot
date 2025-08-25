@@ -1,0 +1,70 @@
+"use client";
+
+import { useState } from "react";
+import {
+  Container,
+  TextField,
+  Button,
+  Paper,
+  Typography,
+  Box,
+} from "@mui/material";
+
+export default function HomePage() {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+
+  const sendMessage = async () => {
+    if (!input) return;
+
+    const userMessage = { role: "user", content: input };
+    setMessages([...messages, userMessage]);
+
+    const res = await fetch("http://localhost:8000/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query: input }),
+    });
+    const data = await res.json();
+
+    const botMessage = { role: "assistant", content: data.answer };
+    setMessages((prev) => [...prev, botMessage]);
+    setInput("");
+  };
+
+  return (
+    <Container maxWidth="sm" sx={{ mt: 4 }}>
+      <Typography variant="h4" gutterBottom align="center">
+        📘 Syllabus Study Chatbot
+      </Typography>
+
+      <Paper elevation={3} sx={{ p: 2, height: 400, overflowY: "auto", mb: 2 }}>
+        {messages.map((msg, idx) => (
+          <Box key={idx} sx={{ mb: 1 }}>
+            <Typography
+              variant="subtitle2"
+              color={msg.role === "user" ? "primary" : "secondary"}
+            >
+              {msg.role === "user" ? "You" : "Bot"}:
+            </Typography>
+            <Typography>{msg.content}</Typography>
+          </Box>
+        ))}
+      </Paper>
+
+      <Box sx={{ display: "flex", gap: 1 }}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Ask about the syllabus..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+        />
+        <Button variant="contained" onClick={sendMessage}>
+          Send
+        </Button>
+      </Box>
+    </Container>
+  );
+}
