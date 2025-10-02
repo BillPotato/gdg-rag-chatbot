@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import uvicorn
 
 # LangChain imports - Fixed import paths
 from langchain_openai import ChatOpenAI
@@ -16,6 +17,8 @@ from langchain_core.prompts import ChatPromptTemplate
 
 # Disable HuggingFace tokenizers parallelism warning
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+app = FastAPI()
 
 # Load environment variables
 load_dotenv()
@@ -81,3 +84,7 @@ class Question(BaseModel):
 def chat(q: Question):
     response = qa_chain.invoke({"input": q.query})
     return {"answer": response["answer"]}
+
+# --- Run app with uvicorn ---
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
