@@ -1,3 +1,7 @@
 venv
 __pycache__
 .env
+
+docs_cache.pkl
+docs_hash.txt
+faiss_index
