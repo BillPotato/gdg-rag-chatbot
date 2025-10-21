@@ -11,15 +11,6 @@ import {
   Box,
 } from "@mui/material";
 
-// import firebase db
-import db from "./firebase.js"
-import {
-    getUsers,
-    addMsg,
-} from "./firebase.js"
-
-const users = await getUsers(db)
-console.log(users)
 
 // 2. Component states
 export default function HomePage() {
@@ -33,8 +24,6 @@ export default function HomePage() {
     // Add user message to chat
     const userMessage = { role: "user", content: input };
     setMessages([...messages, userMessage]);
-    // add userMessage to database
-    await addMsg(userMessage)
 
     // Send request to FastAPI backend
     const res = await fetch("http://localhost:8000/chat", {
@@ -47,8 +36,6 @@ export default function HomePage() {
     // Add bot response
     const botMessage = { role: "assistant", content: data.answer };
     setMessages((prev) => [...prev, botMessage]);
-    // add botMessage to database
-    await addMsg(botMessage)
     setInput("");
   };
 
