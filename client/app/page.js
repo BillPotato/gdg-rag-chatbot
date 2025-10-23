@@ -10,11 +10,20 @@ import {
   Typography,
   Box,
 } from "@mui/material";
+import {
+    SignedIn,
+    SignedOut,
+    UserButton
+} from "@clerk/nextjs"
+import {
+    useRouter
+} from "next/navigation"
 
 // 2. Component states
 export default function HomePage() {
   const [messages, setMessages] = useState([]);  // chat history
   const [input, setInput] = useState("");        // user input
+  const router = useRouter();
 
   // 3. send message function
     const sendMessage = async () => {
@@ -41,6 +50,13 @@ export default function HomePage() {
   // 4. UI layout (frontend)
   return (
     <Container maxWidth="sm" sx={{ mt: 4 }}>
+        <SignedOut>
+            <Button onClick={()=>{router.push("/sign-in")}}>
+                Sign in
+            </Button>
+        </SignedOut>
+        <SignedIn>
+        <UserButton/> 
       <Typography variant="h4" gutterBottom align="center">
         📘 Course Study Chatbot
       </Typography>
@@ -74,6 +90,7 @@ export default function HomePage() {
           Send
         </Button>
       </Box>
+      </SignedIn>
     </Container>
   );
 }
