@@ -13,7 +13,20 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
+
+
+
+
+# Initialize Firebase Admin SDK
+if not firebase_admin._apps:
+    cred = credentials.Certificate(r"C:\Users\HP\Documents\Deadline-folder\test\gdg-rag-chatbot\server\gdgg-483b9-firebase-adminsdk-fbsvc-f874a91cd5.json")
+    firebase_admin.initialize_app(cred)
+
+db1 = firestore.client()
 # Disable HuggingFace tokenizers parallelism warning
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -21,6 +34,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 # Load environment variables from .env
 load_dotenv()
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
 
 # Directories
 DOCS_DIR = "docs"
@@ -90,7 +104,26 @@ class Question(BaseModel):
 def chat(q: Question):
     """Answer a question using the retrieval-augmented QA chain."""
     response = qa_chain.invoke({"input": q.query})
+    data1 = {
+        "question": q.query,
+        "side" : "user"
+    }
+    data2 = {
+        "question": response["answer"],
+        "side" : "bot"
+    }
+    doc_ref = db1.collection("chats").document()
+    doc_ref.set(data1,data2)
     return {"answer": response["answer"]}
+
+
+#Endpoint to get all chats 
+@app.get("/chat")
+def get_chats():
+    #
+    return
+
+
 
 # 9. Run the app
 if __name__ == "__main__":
