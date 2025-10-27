@@ -26,7 +26,7 @@ if not firebase_admin._apps:
     cred = credentials.Certificate(r"C:\Users\HP\Documents\Deadline-folder\test\gdg-rag-chatbot\server\gdgg-483b9-firebase-adminsdk-fbsvc-f874a91cd5.json")
     firebase_admin.initialize_app(cred)
 
-db1 = firestore.client()
+fire_db = firestore.client()
 # Disable HuggingFace tokenizers parallelism warning
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -104,27 +104,27 @@ class Question(BaseModel):
 def chat(q: Question):
     """Answer a question using the retrieval-augmented QA chain."""
     response = qa_chain.invoke({"input": q.query})
-    data1 = {
-        "question": q.query,
-        "side" : "user"
+    prompt_data = {
+        "side": "user",
+        "text": q.query,
+        "timestamp": firestore.SERVER_TIMESTAMP
     }
-    data2 = {
-        "question": response["answer"],
-        "side" : "bot"
+    answer_data = {
+        "side": "bot",
+        "text": response["answer"],
+        "timestamp": firestore.SERVER_TIMESTAMP
     }
-    doc_ref = db1.collection("chats").document()
-    doc_ref.set(data1,data2)
+    doc_ref = fire_db.collection("chats")
+    doc_ref.add(prompt_data)
+    doc_ref.add(answer_data)
     return {"answer": response["answer"]}
+
 
 
 #Endpoint to get all chats 
 @app.get("/chat")
 def get_chats():
-    #
-    return
-
-
-
+    return 
 # 9. Run the app
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
