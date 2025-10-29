@@ -19,6 +19,9 @@ import {
     useRouter
 } from "next/navigation"
 
+// Import Poppins Black font
+import "@fontsource/poppins/900.css";
+
 // 2. Component states
 export default function HomePage() {
   const [messages, setMessages] = useState([]);  // chat history
@@ -49,6 +52,16 @@ export default function HomePage() {
 
   // 4. UI layout (frontend)
   return (
+    <Box
+        sx={{
+            minHeight: "100vh",
+            backgroundColor: "#a5d1f2",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "flex-start",
+            py: 4,
+        }}
+    >   
     <Container maxWidth="sm" sx={{ mt: 4 }}>
         <SignedOut>
             <Button onClick={()=>{router.push("/sign-in")}}>
@@ -57,12 +70,33 @@ export default function HomePage() {
         </SignedOut>
         <SignedIn>
         <UserButton/> 
-      <Typography variant="h4" gutterBottom align="center">
-        📘 Course Study Chatbot
-      </Typography>
+        
+        <Typography
+          variant = "h4"
+          gutterBottom
+          align = "center"
+          sx={{
+            color: "#1991d2",
+            fontFamily: "Poppins, sans-serif",
+            fontWeight: 900,
+          }}
+        >
+          Course Study Chatbot ₍^. .^₎⟆
+        </Typography>
 
       {/* Chat history box */}
-      <Paper elevation={3} sx={{ p: 2, height: 400, overflowY: "auto", mb: 2 }}>
+        <Paper
+            elevation={3}
+            sx={{
+                p: 2,
+                height: 400,
+                overflowY: "auto",
+                mb: 2,
+                border: "4px solid #1991d2",
+                borderRadius: 2,
+                backgroundColor: "white",         
+                }}
+        >
         {messages.map((msg, idx) => (
           <Box key={idx} sx={{ mb: 1 }}>
             <Typography
@@ -86,11 +120,23 @@ export default function HomePage() {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && sendMessage()}
         />
-        <Button variant="contained" onClick={sendMessage}>
+        <Button
+            variant="contained" 
+            onClick={sendMessage}
+            sx={{
+                backgroundColor: "#1991d2",
+                color: "white",
+                fontWeight: "bold",
+                "&:hover": {
+                    backgroundColor: "#157bb0",
+                },
+            }} 
+        >
           Send
         </Button>
       </Box>
       </SignedIn>
     </Container>
+    </Box>
   );
 }
