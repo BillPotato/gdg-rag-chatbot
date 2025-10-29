@@ -27,6 +27,9 @@ import {
 // Import Poppins Black font
 import "@fontsource/poppins/900.css";
 
+// Import Poppins Black font
+import "@fontsource/poppins/900.css";
+
 // 2. Component states
 export default function HomePage() {
   const [messages, setMessages] = useState([]);  // chat history
