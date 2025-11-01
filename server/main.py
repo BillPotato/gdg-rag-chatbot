@@ -124,7 +124,13 @@ def chat(q: Question):
 #Endpoint to get all chats 
 @app.get("/chat")
 def get_chats():
-    return 
+    """Retrieve all chat messages from Firestore."""
+    chats = []
+    docs = fire_db.collection("chats").order_by("timestamp").where("side", "==", "user").stream()
+    for doc in docs:
+        chat = doc.to_dict()
+        chats.append(chat.get("text"))
+    return {"chats": chats}
 # 9. Run the app
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
