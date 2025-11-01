@@ -96,6 +96,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+def get_doc_ref_by_id(collectioname, fieldname, value):
+        col_ref = fire_db.collection(collectioname)
+        query_ref = col_ref.where(fieldname, '==', value)
+        docs = query_ref.stream()
+        for doc in docs:
+            return doc.reference
+        return None
+
 # 8. API Routes
 class Question(BaseModel):
     query: str
@@ -126,7 +135,19 @@ class UserId(BaseModel):
 @app.post("/users")
 def createUser(uid: UserId):
     userId = uid.userId
-
+    doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
+    if doc_ref:
+        doc_ref = fire_db.collection('chats').document(doc_ref.id)
+        doc = doc_ref.get()
+        return {"chats": doc.to_dict().get('chat')}
+    else:
+        new_user_data = {
+            'userId': userId,
+            'chat': []
+        }
+    doc_ref = fire_db.collection('chats')
+    doc_ref.add(new_user_data)
+    return {}
     # Create user/find user with userId
     
 
