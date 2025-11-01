@@ -1,7 +1,7 @@
 // 1. imports and setup
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   TextField,
@@ -10,12 +10,30 @@ import {
   Typography,
   Box,
 } from "@mui/material";
+import {
+    createUser
+} from "utils/fireServices"
+import {
+    useAuth,
+    isLoaded
+} from "@clerk/nextjs"
 
 
 // 2. Component states
 export default function HomePage() {
   const [messages, setMessages] = useState([]);  // chat history
   const [input, setInput] = useState("");        // user input
+
+  // Create user and get chat history
+  useEffect(() => {
+    // Create user if doesn't exist and get userObj if exists
+    const { userId } = useAuth()
+
+    const userObj = createUser(userId)
+
+    // Set chat history
+    setMessages(userObj.chat)
+  }, [])
 
   // 3. send message function
     const sendMessage = async () => {
