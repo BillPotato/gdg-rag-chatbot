@@ -8,3 +8,5 @@ firebase_credentials.json
 docs_cache.pkl
 docs_hash.txt
 faiss_index
+
+firebase_credentials.json
