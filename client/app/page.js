@@ -11,6 +11,11 @@ import {
   Box,
 } from "@mui/material";
 import {
+    createUser
+} from "./utils/firebaseServices"
+import {
+    useAuth,
+    isLoaded,
     SignedIn,
     SignedOut,
     UserButton
@@ -18,13 +23,6 @@ import {
 import {
     useRouter
 } from "next/navigation"
-import {
-    createUser
-} from "utils/fireServices"
-import {
-    useAuth,
-    isLoaded
-} from "@clerk/nextjs"
 
 // Import Poppins Black font
 import "@fontsource/poppins/900.css";
@@ -35,15 +33,15 @@ export default function HomePage() {
   const [input, setInput] = useState("");        // user input
   const router = useRouter();
 
+  // Create user if doesn't exist and get userObj if exists
+  const { userId } = useAuth()
+  console.log(userId)
+
   // Create user and get chat history
   useEffect(() => {
-    // Create user if doesn't exist and get userObj if exists
-    const { userId } = useAuth()
-
-    const userObj = createUser(userId)
-
+  const userObj = createUser(userId)
     // Set chat history
-    setMessages(userObj.chat)
+    setMessages(userObj.chat ?? [])
   }, [])
 
   // 3. send message function
