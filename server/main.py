@@ -13,7 +13,20 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import ChatPromptTemplate
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
+
+
+
+
+# Initialize Firebase Admin SDK
+if not firebase_admin._apps:
+    cred = credentials.Certificate("firebase_credentials.json")
+    firebase_admin.initialize_app(cred)
+
+fire_db = firestore.client()
 # Disable HuggingFace tokenizers parallelism warning
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
@@ -21,6 +34,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 # Load environment variables from .env
 load_dotenv()
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
 
 # Directories
 DOCS_DIR = "docs"
@@ -82,6 +96,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+def get_doc_ref_by_id(collectioname, fieldname, value):
+        col_ref = fire_db.collection(collectioname)
+        query_ref = col_ref.where(fieldname, '==', value)
+        docs = query_ref.stream()
+        for doc in docs:
+            return doc.reference
+        return None
+
 # 8. API Routes
 class Question(BaseModel):
     query: str
@@ -90,8 +113,56 @@ class Question(BaseModel):
 def chat(q: Question):
     """Answer a question using the retrieval-augmented QA chain."""
     response = qa_chain.invoke({"input": q.query})
+    prompt_data = {
+        "side": "user",
+        "text": q.query,
+        "timestamp": firestore.SERVER_TIMESTAMP
+    }
+    answer_data = {
+        "side": "bot",
+        "text": response["answer"],
+        "timestamp": firestore.SERVER_TIMESTAMP
+    }
+    doc_ref = fire_db.collection("chats")
+    doc_ref.add(prompt_data)
+    doc_ref.add(answer_data)
     return {"answer": response["answer"]}
 
+#Endpoint to create/find user
+class UserId(BaseModel):
+    userId: str
+
+@app.post("/users")
+def createUser(uid: UserId):
+    userId = uid.userId
+
+    # Create user/find user with userId
+    doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
+    if doc_ref:
+        doc_ref = fire_db.collection('chats').document(doc_ref.id)
+        doc = doc_ref.get()
+        return {"chats": doc.to_dict().get('chat')}
+    else:
+        new_user_data = {
+            'userId': userId,
+            'chat': []
+        }
+    doc_ref = fire_db.collection('chats')
+    doc_ref.add(new_user_data)
+    return {}
+    
+
+
+#Endpoint to get all chats 
+@app.get("/chat")
+def get_chats():
+    """Retrieve all chat messages from Firestore."""
+    chats = []
+    docs = fire_db.collection("chats").order_by("timestamp").where("side", "==", "user").stream()
+    for doc in docs:
+        chat = doc.to_dict()
+        chats.append(chat.get("text"))
+    return {"chats": chats}
 # 9. Run the app
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

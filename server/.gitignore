@@ -2,8 +2,9 @@ venv
 __pycache__
 .env
 
-docs_cache.pkl
-docs_hash.txt
 faiss_index
+docs_hash.txt
+docs_cache.pkl
+gdgg-483b9-firebase-adminsdk-fbsvc-f874a91cd5.json
 
 firebase_credentials.json

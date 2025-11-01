@@ -40,5 +40,13 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+<<<<<<< HEAD
 # firebase
 firebase_credentials.js
+=======
+# clerk configuration (can include secrets)
+/.clerk/
+
+# firebase
+firebase_credentials.js
+>>>>>>> davii
