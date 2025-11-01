@@ -119,6 +119,16 @@ def chat(q: Question):
     doc_ref.add(answer_data)
     return {"answer": response["answer"]}
 
+#Endpoint to create/find user
+class UserId(BaseModel):
+    userId: str
+
+@app.post("/users")
+def createUser(uid: UserId):
+    userId = uid.userId
+
+    # Create user/find user with userId
+    
 
 
 #Endpoint to get all chats 
