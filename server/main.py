@@ -23,7 +23,7 @@ from firebase_admin import firestore
 
 # Initialize Firebase Admin SDK
 if not firebase_admin._apps:
-    cred = credentials.Certificate(r"C:\Users\HP\Documents\Deadline-folder\test\gdg-rag-chatbot\server\gdgg-483b9-firebase-adminsdk-fbsvc-f874a91cd5.json")
+    cred = credentials.Certificate("firebase_credentials.json")
     firebase_admin.initialize_app(cred)
 
 fire_db = firestore.client()
@@ -135,6 +135,8 @@ class UserId(BaseModel):
 @app.post("/users")
 def createUser(uid: UserId):
     userId = uid.userId
+
+    # Create user/find user with userId
     doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
     if doc_ref:
         doc_ref = fire_db.collection('chats').document(doc_ref.id)
@@ -148,7 +150,6 @@ def createUser(uid: UserId):
     doc_ref = fire_db.collection('chats')
     doc_ref.add(new_user_data)
     return {}
-    # Create user/find user with userId
     
 
 
