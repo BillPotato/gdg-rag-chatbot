@@ -1,4 +1,5 @@
 # 1. imports and setup
+import datetime
 import os
 import uvicorn
 from dotenv import load_dotenv
@@ -23,7 +24,7 @@ from firebase_admin import firestore
 
 # Initialize Firebase Admin SDK
 if not firebase_admin._apps:
-    cred = credentials.Certificate("firebase_credentials.json")
+    cred = credentials.Certificate(r"C:\Users\HP\Documents\Deadline-folder\test\gdg-rag-chatbot\server\gdgg-483b9-firebase-adminsdk-fbsvc-f874a91cd5.json")
     firebase_admin.initialize_app(cred)
 
 fire_db = firestore.client()
@@ -109,28 +110,10 @@ def get_doc_ref_by_id(collectioname, fieldname, value):
 class Question(BaseModel):
     query: str
 
-@app.post("/chat")
-def chat(q: Question):
-    """Answer a question using the retrieval-augmented QA chain."""
-    response = qa_chain.invoke({"input": q.query})
-    prompt_data = {
-        "side": "user",
-        "text": q.query,
-        "timestamp": firestore.SERVER_TIMESTAMP
-    }
-    answer_data = {
-        "side": "bot",
-        "text": response["answer"],
-        "timestamp": firestore.SERVER_TIMESTAMP
-    }
-    doc_ref = fire_db.collection("chats")
-    doc_ref.add(prompt_data)
-    doc_ref.add(answer_data)
-    return {"answer": response["answer"]}
-
 #Endpoint to create/find user
 class UserId(BaseModel):
     userId: str
+
 
 @app.post("/users")
 def createUser(uid: UserId):
@@ -150,19 +133,58 @@ def createUser(uid: UserId):
     doc_ref = fire_db.collection('chats')
     doc_ref.add(new_user_data)
     return {}
+
+@app.post("/chat")
+def chat(q: Question, uid: UserId):
+    userId = uid.userId
+    """Answer a question using the retrieval-augmented QA chain."""
+    response = qa_chain.invoke({"input": q.query})
+    human_message = {
+        'text': q.query,
+        'side': 'user',
+        'timestamp': datetime.datetime.utcnow(),
+    }
+    bot_message = {
+        'text': response["answer"],
+        'side': 'bot',
+        'timestamp': datetime.datetime.utcnow(),
+    }
+    doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
+    if doc_ref:
+        doc_ref = fire_db.collection('chats').document(doc_ref.id)
+        doc_ref.update({
+            'chat': firestore.ArrayUnion([human_message, bot_message])
+        })
+    else:
+        new_user_data = {
+            'userId': userId,
+            'chat': [human_message, bot_message]
+        }
+        doc_ref = fire_db.collection('chats')
+        doc_ref.add(new_user_data)
+    return {"answer": response["answer"]}
+
+
+
+
     
 
 
 #Endpoint to get all chats 
 @app.get("/chat")
-def get_chats():
+def get_chats(uid: UserId):
+    # I am testing, may or may not work, just to get the commits done while I still remember
+    userId = uid.userId
     """Retrieve all chat messages from Firestore."""
     chats = []
-    docs = fire_db.collection("chats").order_by("timestamp").where("side", "==", "user").stream()
+    docs = fire_db.collection("chats").where("userId", "==", userId).order_by("timestamp").stream()
     for doc in docs:
         chat = doc.to_dict()
-        chats.append(chat.get("text"))
+        chats.append(chat.get("chat", []))
     return {"chats": chats}
+
+
+
 # 9. Run the app
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
