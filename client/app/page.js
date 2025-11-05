@@ -11,9 +11,6 @@ import {
   Box,
 } from "@mui/material";
 import {
-    createUser
-} from "./utils/firebaseServices"
-import {
     useAuth,
     isLoaded,
     SignedIn,
@@ -23,6 +20,9 @@ import {
 import {
     useRouter
 } from "next/navigation"
+import {
+    createUser
+} from "./utils/firebaseServices"
 
 // Import Poppins Black font
 import "@fontsource/poppins/900.css";
@@ -39,7 +39,7 @@ export default function HomePage() {
 
   // Create user and get chat history
   useEffect(() => {
-  const userObj = createUser(userId)
+  const userObj = createUser(userId).then(data=>console.log("data:", data))
     // Set chat history
     setMessages(userObj.chat ?? [])
   }, [])
@@ -53,10 +53,10 @@ export default function HomePage() {
     setMessages([...messages, userMessage]);
 
     // Send request to FastAPI backend
-    const res = await fetch("http://localhost:8000/chat", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: input }),
+      body: JSON.stringify({ query: input, userId: userId }),
     });
     const data = await res.json();
 
