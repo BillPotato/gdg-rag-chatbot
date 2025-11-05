@@ -7,8 +7,9 @@ export const createUser = async (userId) => {
     const payload = {
         "userId": String(userId)
     }
-    axios.post(`${BACKEND_URL}/users`, payload)
+    return axios.post(`${BACKEND_URL}/users`, payload)
         .then(res => {
+            console.log("res", res)
             return res.data
         })
 }
