@@ -178,12 +178,12 @@ def get_chats(uid: UserId):
     userId = uid.userId
     """Retrieve all chat messages from Firestore."""
     chats = []
-    docs = fire_db.collection("chats").where("userId", "==", userId).order_by("timestamp").stream()
-    for doc in docs:
-        chat = doc.to_dict()
-        chats.append(chat.get("chat", []))
-    return {"chats": chats}
-
+    doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
+    if doc_ref:
+        doc_ref = fire_db.collection('chats').document(doc_ref.id)
+        doc = doc_ref.get()
+        chats = doc.to_dict().get('chat', [])
+        return {"chats": chats}
 
 
 # 9. Run the app
