@@ -54,6 +54,7 @@ export default function HomePage() {
     // Add user message to chat
     const userMessage = { role: "user", content: input };
     setMessages([...messages, userMessage]);
+    setInput("");
 
     // Send request to FastAPI backend
     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chat`, {
@@ -66,7 +67,6 @@ export default function HomePage() {
     // Add bot response
     const botMessage = { role: "assistant", content: data.answer };
     setMessages((prev) => [...prev, botMessage]);
-    setInput("");
   };
 
   // 4. UI layout (frontend)
