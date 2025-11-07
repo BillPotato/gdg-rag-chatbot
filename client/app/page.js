@@ -33,16 +33,19 @@ export default function HomePage() {
   const [input, setInput] = useState("");        // user input
   const router = useRouter();
 
+//   console.log("messages:", messages)
+
   // Create user if doesn't exist and get userObj if exists
   const { userId } = useAuth()
-  console.log(userId)
+//   console.log("userId:",userId)
 
   // Create user and get chat history
   useEffect(() => {
-  const userObj = createUser(userId).then(data=>console.log("data:", data))
-    // Set chat history
-    setMessages(userObj.chat ?? [])
-  }, [])
+  createUser(userId).then(userObj => {
+    // console.log(userObj)
+    setMessages(userObj.chats)
+  })
+  }, [userId])
 
   // 3. send message function
     const sendMessage = async () => {

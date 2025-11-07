@@ -141,13 +141,13 @@ def chat(req: ChatRequest):
     """Answer a question using the retrieval-augmented QA chain."""
     response = qa_chain.invoke({"input": req.query})
     human_message = {
-        'text':req.query,
-        'side': 'user',
+        'content':req.query,
+        'role': 'user',
         'timestamp': datetime.datetime.utcnow(),
     }
     bot_message = {
-        'text': response["answer"],
-        'side': 'bot',
+        'content': response["answer"],
+        'role': 'bot',
         'timestamp': datetime.datetime.utcnow(),
     }
     doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
@@ -164,12 +164,6 @@ def chat(req: ChatRequest):
         doc_ref = fire_db.collection('chats')
         doc_ref.add(new_user_data)
     return {"answer": response["answer"]}
-
-
-
-
-    
-
 
 #Endpoint to get all chats 
 @app.get("/chat")
