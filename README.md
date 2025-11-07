@@ -27,6 +27,15 @@ cd gdg-rag
 
 ### 2. Backend Setup (Python)
 
+### .env content:
+```sh
+OPENROUTER_API_KEY=
+```
+
+### firebase_credentials.json
+
+Follow [this link](https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments) to generate a credentials file. After that, place it in your /server directory and rename as firebase_credentials.json
+
 1. **Install dependencies:**
    ```bash
    cd server
@@ -45,6 +54,18 @@ cd gdg-rag
    The backend will be available at `http://localhost:8000`.
 
 ### 3. Frontend Setup (Next.js)
+
+### .env.local content:
+
+Follow [this link](https://dashboard.clerk.com/~/api-keys) to get your public and secret key
+
+```sh
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+# CLERK_OAUTH_KEY=(Optional)
+
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+```
 
 1. **Install dependencies:**
    ```bash
