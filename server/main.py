@@ -24,7 +24,7 @@ from firebase_admin import firestore
 
 # Initialize Firebase Admin SDK
 if not firebase_admin._apps:
-    cred = credentials.Certificate(r"C:\Users\HP\Documents\Deadline-folder\test\gdg-rag-chatbot\server\gdgg-483b9-firebase-adminsdk-fbsvc-f874a91cd5.json")
+    cred = credentials.Certificate(r"./firebase_credentials.json")
     firebase_admin.initialize_app(cred)
 
 fire_db = firestore.client()
@@ -107,8 +107,9 @@ def get_doc_ref_by_id(collectioname, fieldname, value):
         return None
 
 # 8. API Routes
-class Question(BaseModel):
+class ChatRequest(BaseModel):
     query: str
+    userId: str
 
 #Endpoint to create/find user
 class UserId(BaseModel):
@@ -135,12 +136,12 @@ def createUser(uid: UserId = UserId(userId='bruh')):
     return {}
 
 @app.post("/chat")
-def chat(q: Question, uid: UserId):
-    userId = uid.userId
+def chat(req: ChatRequest):
+    userId = req.userId
     """Answer a question using the retrieval-augmented QA chain."""
-    response = qa_chain.invoke({"input": q.query})
+    response = qa_chain.invoke({"input": req.query})
     human_message = {
-        'text': q.query,
+        'text':req.query,
         'side': 'user',
         'timestamp': datetime.datetime.utcnow(),
     }

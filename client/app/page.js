@@ -1,7 +1,7 @@
 // 1. imports and setup
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Container,
   TextField,
@@ -11,6 +11,8 @@ import {
   Box,
 } from "@mui/material";
 import {
+    useAuth,
+    isLoaded,
     SignedIn,
     SignedOut,
     UserButton
@@ -18,12 +20,27 @@ import {
 import {
     useRouter
 } from "next/navigation"
+import {
+    createUser
+} from "./utils/firebaseServices"
+
 
 // 2. Component states
 export default function HomePage() {
   const [messages, setMessages] = useState([]);  // chat history
   const [input, setInput] = useState("");        // user input
   const router = useRouter();
+
+  // Create user if doesn't exist and get userObj if exists
+  const { userId } = useAuth()
+  console.log(userId)
+
+  // Create user and get chat history
+  useEffect(() => {
+  const userObj = createUser(userId).then(data=>console.log("data:", data))
+    // Set chat history
+    setMessages(userObj.chat ?? [])
+  }, [])
 
   // 3. send message function
     const sendMessage = async () => {
@@ -34,10 +51,10 @@ export default function HomePage() {
     setMessages([...messages, userMessage]);
 
     // Send request to FastAPI backend
-    const res = await fetch("http://localhost:8000/chat", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: input }),
+      body: JSON.stringify({ query: input, userId: userId }),
     });
     const data = await res.json();
 
@@ -63,7 +80,7 @@ export default function HomePage() {
 
       {/* Chat history box */}
       <Paper elevation={3} sx={{ p: 2, height: 400, overflowY: "auto", mb: 2 }}>
-        {messages.map((msg, idx) => (
+        {messages && messages.map((msg, idx) => (
           <Box key={idx} sx={{ mb: 1 }}>
             <Typography
               variant="subtitle2"
