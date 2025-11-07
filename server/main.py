@@ -116,7 +116,7 @@ class UserId(BaseModel):
 
 
 @app.post("/users")
-def createUser(uid: UserId):
+def createUser(uid: UserId = UserId(userId='bruh')):
     userId = uid.userId
 
     # Create user/find user with userId
