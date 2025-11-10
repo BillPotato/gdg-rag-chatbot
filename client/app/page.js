@@ -51,12 +51,30 @@ export default function HomePage() {
   return (
     <Container maxWidth="sm" sx={{ mt: 4 }}>
         <SignedOut>
-            <Button onClick={()=>{router.push("/sign-in")}}>
-                Sign in
-            </Button>
-        </SignedOut>
-        <SignedIn>
-        <UserButton/> 
+          <Box
+            sx={{
+              textAlign: "center",
+              mt: 20,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+    }}
+  >
+  
+    <Typography variant="body1" color="text.secondary">
+      Please sign in to start chatting with your study assistant.
+    </Typography>
+    <Button
+      variant="contained"
+      size="large"
+      onClick={() => router.push("/sign-in")}
+    >
+      Sign In
+    </Button>
+  </Box>
+</SignedOut>
+ 
       <Typography variant="h4" gutterBottom align="center">
         📘 Course Study Chatbot
       </Typography>
@@ -77,6 +95,7 @@ export default function HomePage() {
       </Paper>
 
       {/* Input + Send button */}
+      <SignedIn>
       <Box sx={{ display: "flex", gap: 1 }}>
         <TextField
           fullWidth
@@ -91,6 +110,6 @@ export default function HomePage() {
         </Button>
       </Box>
       </SignedIn>
-    </Container>
+    </Container> 
   );
 }
