@@ -86,25 +86,36 @@ export default function HomePage() {
     >   
     <Container maxWidth="sm" sx={{ mt: 4 }}>
         <SignedOut>
-            <Button onClick={()=>{router.push("/sign-in")}}>
-                Sign in
+          <Box
+            sx={{
+              textAlign: "center",
+              mt: 20,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+            }}
+  >
+  
+            <Typography variant="body1" color="text.secondary">
+            Please sign in to start chatting with your study assistant.
+            </Typography>
+            <Button
+            variant="contained"
+            size="large"
+            onClick={() => router.push("/sign-in")}
+            >
+            Sign In
             </Button>
+        </Box>
         </SignedOut>
-        <SignedIn>
-        <UserButton/> 
-        
-        <Typography
-          variant = "h4"
-          gutterBottom
-          align = "center"
-          sx={{
-            color: "#1991d2",
-            fontFamily: "Poppins, sans-serif",
-            fontWeight: 900,
-          }}
-        >
-          Course Study Chatbot ₍^. .^₎⟆
-        </Typography>
+
+
+      <SignedIn>
+      <UserButton/>
+      <Typography variant="h4" gutterBottom align="center">
+        📘 Course Study Chatbot
+      </Typography>
 
       {/* Chat history box */}
         <Paper
@@ -158,7 +169,7 @@ export default function HomePage() {
         </Button>
       </Box>
       </SignedIn>
-    </Container>
+    </Container> 
     </Box>
   );
 }
