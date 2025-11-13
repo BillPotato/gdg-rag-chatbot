@@ -130,7 +130,7 @@ export default function HomePage() {
                 backgroundColor: "white",         
                 }}
         >
-        {messages.map((msg, idx) => (
+        {messages && messages.map((msg, idx) => (
           <Box key={idx} sx={{ mb: 1 }}>
             <Typography
               variant="subtitle2"
