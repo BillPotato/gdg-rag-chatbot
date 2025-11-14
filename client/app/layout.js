@@ -28,14 +28,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" classsName={`${geistSans.variable} ${geistMono.variable}`}>
-      <ClerkProvider>
-        <body>
+    <html lang="en">
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <ClerkProvider>
             <header className="flex justify-end items-center p-4 gap-4 h-16">
+                {children}
             </header>
-            {children}
-        </body>
         </ClerkProvider>
+      </body>
     </html>
   );
 }
