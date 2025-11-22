@@ -34,7 +34,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 # 2. env variables
 # Load environment variables from .env
 load_dotenv()
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_API_KEY = os .getenv("OPENROUTER_API_KEY")
 
 
 # Directories
@@ -51,7 +51,7 @@ def load_faiss_index():
 # 4. LLM Setup
 # Initialize LLM (through OpenRouter API)
 llm = ChatOpenAI(
-    model="meta-llama/llama-3.3-8b-instruct:free",
+    model="meta-llama/llama-3.3-70b-instruct:free",
     api_key=OPENROUTER_API_KEY,
     base_url="https://openrouter.ai/api/v1",
     default_headers={
@@ -100,7 +100,7 @@ app.add_middleware(
 
 def get_doc_ref_by_id(collectioname, fieldname, value):
         col_ref = fire_db.collection(collectioname)
-        query_ref = col_ref.where(fieldname, '==', value)
+        query_ref = col_ref.where(fieldname, '==', value)    
         docs = query_ref.stream()
         for doc in docs:
             return doc.reference
