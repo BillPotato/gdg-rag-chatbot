@@ -1,0 +1,8 @@
+.dockerignore
+.gitignore
+*venv
+__pycache__
+.env.local
+docs_cache.pkl
+docs_hash.txt
+faiss_index

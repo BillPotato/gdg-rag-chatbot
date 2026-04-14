@@ -1,0 +1,20 @@
+services:
+  client:
+    build:
+      context: ./client/
+      dockerfile: dev.Dockerfile
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=/api/
+# TODO: add volume for development
+
+  nginx:
+    image: nginx:1.29-alpine
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    container_name: reverse_proxy
+    depends_on:
+      - client
+
+    
