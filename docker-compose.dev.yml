@@ -5,7 +5,10 @@ services:
       dockerfile: dev.Dockerfile
     environment:
       - NEXT_PUBLIC_BACKEND_URL=/api/
-# TODO: add volume for development
+    volumes:
+      - ./client/:/usr/src/app
+      - /usr/src/app/node_modules
+    container_name: gdg-client-dev
 
   nginx:
     image: nginx:1.29-alpine
