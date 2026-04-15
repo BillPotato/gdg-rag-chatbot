@@ -12,4 +12,4 @@ COPY . .
 
 RUN python process.py
 
-CMD ["uvicorn", "app:app", "--reload"]
+CMD ["uvicorn", "app:app", "--reload", "--host", "0.0.0.0"]
