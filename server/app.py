@@ -35,6 +35,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 # Load environment variables from .env
 load_dotenv()
 OPENROUTER_API_KEY = os .getenv("OPENROUTER_API_KEY")
+MODEL = os .getenv("MODEL")
 
 
 # Directories
@@ -51,7 +52,7 @@ def load_faiss_index():
 # 4. LLM Setup
 # Initialize LLM (through OpenRouter API)
 llm = ChatOpenAI(
-    model="meta-llama/llama-3.3-70b-instruct:free",
+    model=MODEL,
     api_key=OPENROUTER_API_KEY,
     base_url="https://openrouter.ai/api/v1",
     default_headers={

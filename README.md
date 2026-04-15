@@ -30,6 +30,7 @@ cd gdg-rag
 ### .env content:
 ```sh
 OPENROUTER_API_KEY=
+MODEL=
 ```
 
 ### firebase_credentials.json
