@@ -119,66 +119,75 @@ class UserId(BaseModel):
 
 @app.post("/users")
 def createUser(uid: UserId = UserId(userId='bruh')):
-    userId = uid.userId
+    try:
+        userId = uid.userId
 
-    # Create user/find user with userId
-    doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
-    if doc_ref:
-        doc_ref = fire_db.collection('chats').document(doc_ref.id)
-        doc = doc_ref.get()
-        return {"chats": doc.to_dict().get('chat')}
-    else:
-        new_user_data = {
-            'userId': userId,
-            'chat': []
-        }
-    doc_ref = fire_db.collection('chats')
-    doc_ref.add(new_user_data)
-    return {}
+        # Create user/find user with userId
+        doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
+        if doc_ref:
+            doc_ref = fire_db.collection('chats').document(doc_ref.id)
+            doc = doc_ref.get()
+            return {"chats": doc.to_dict().get('chat')}
+        else:
+            new_user_data = {
+                'userId': userId,
+                'chat': []
+            }
+        doc_ref = fire_db.collection('chats')
+        doc_ref.add(new_user_data)
+        return {}
+    except Exception as e:
+        print(f"Error: {e}")
 
 @app.post("/chat")
 def chat(req: ChatRequest):
-    userId = req.userId
-    """Answer a question using the retrieval-augmented QA chain."""
-    response = qa_chain.invoke({"input": req.query})
-    human_message = {
-        'content':req.query,
-        'role': 'user',
-        'timestamp': datetime.datetime.utcnow(),
-    }
-    bot_message = {
-        'content': response["answer"],
-        'role': 'bot',
-        'timestamp': datetime.datetime.utcnow(),
-    }
-    doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
-    if doc_ref:
-        doc_ref = fire_db.collection('chats').document(doc_ref.id)
-        doc_ref.update({
-            'chat': firestore.ArrayUnion([human_message, bot_message])
-        })
-    else:
-        new_user_data = {
-            'userId': userId,
-            'chat': [human_message, bot_message]
+    try:
+        userId = req.userId
+        """Answer a question using the retrieval-augmented QA chain."""
+        response = qa_chain.invoke({"input": req.query})
+        human_message = {
+            'content':req.query,
+            'role': 'user',
+            'timestamp': datetime.datetime.utcnow(),
         }
-        doc_ref = fire_db.collection('chats')
-        doc_ref.add(new_user_data)
-    return {"answer": response["answer"]}
+        bot_message = {
+            'content': response["answer"],
+            'role': 'bot',
+            'timestamp': datetime.datetime.utcnow(),
+        }
+        doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
+        if doc_ref:
+            doc_ref = fire_db.collection('chats').document(doc_ref.id)
+            doc_ref.update({
+                'chat': firestore.ArrayUnion([human_message, bot_message])
+            })
+        else:
+            new_user_data = {
+                'userId': userId,
+                'chat': [human_message, bot_message]
+            }
+            doc_ref = fire_db.collection('chats')
+            doc_ref.add(new_user_data)
+        return {"answer": response["answer"]}
+    except Exception as e:
+        print(f"Error: {e}")
 
 #Endpoint to get all chats 
 @app.get("/chat")
 def get_chats(uid: UserId):
-    # I am testing, may or may not work, just to get the commits done while I still remember
-    userId = uid.userId
-    """Retrieve all chat messages from Firestore."""
-    chats = []
-    doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
-    if doc_ref:
-        doc_ref = fire_db.collection('chats').document(doc_ref.id)
-        doc = doc_ref.get()
-        chats = doc.to_dict().get('chat', [])
-        return {"chats": chats}
+    try:
+        # I am testing, may or may not work, just to get the commits done while I still remember
+        userId = uid.userId
+        """Retrieve all chat messages from Firestore."""
+        chats = []
+        doc_ref = get_doc_ref_by_id('chats', 'userId', userId)
+        if doc_ref:
+            doc_ref = fire_db.collection('chats').document(doc_ref.id)
+            doc = doc_ref.get()
+            chats = doc.to_dict().get('chat', [])
+            return {"chats": chats}
+    except Exception as e:
+        print(f"Error: {e}")
 
 
 # 9. Run the app
