@@ -7,8 +7,8 @@ services:
       - NEXT_PUBLIC_BACKEND_URL=/api/
     volumes:
       - ./client/:/usr/src/app
-      # This named volume is to prevent 
-      # node modules from being deleted in the cotainer
+      # named volume to prevent node modules 
+      # from being deleted in the cotainer
       - client_node_modules:/usr/src/app/node_modules
     container_name: gdg-client-dev
 
@@ -21,6 +21,14 @@ services:
     volumes:
       - ./server/:/app
     container_name: gdg-server-dev
+
+    healthcheck:
+      # ping the FastAPI openapi route to check its health
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:8000/openapi.json\")' || exit 1"]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+      start_period: 15s
     
 
   nginx:
@@ -30,10 +38,11 @@ services:
     ports:
       - 8080:80
     container_name: reverse_proxy
-    # TODO: depend on server's health check
     depends_on:
-      - client
-      - server
+      client:
+        condition: service_started
+      server:
+        condition: service_healthy
 
 volumes:
   client_node_modules:
