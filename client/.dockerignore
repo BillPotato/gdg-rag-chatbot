@@ -1,3 +1,4 @@
 .gitignore
 .dockerignore
+.next
 node_modules
