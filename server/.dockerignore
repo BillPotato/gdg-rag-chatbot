@@ -1,8 +1,12 @@
 .dockerignore
 .gitignore
-*venv
+
 __pycache__
+*.pyc
+
+*venv
 .env.local
+
 docs_cache.pkl
 docs_hash.txt
 faiss_index
