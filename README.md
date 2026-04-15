@@ -1,92 +1,74 @@
-# RAG AI Chatbot for Course Document Study
+# GDG RAG Chatbot
 
-This project is a Retrieval-Augmented Generation (RAG) AI chatbot designed to help students study by uploading and querying course documents. Users can upload PDFs or other course materials, which are then processed and indexed for efficient retrieval and question answering.
+A study-focused AI chatbot that combines RAG + authentication + persistent chat history.
 
-## Features
+Ask questions about your course files, get concise answers from an OpenRouter model, and keep each user's chat history in Firestore.
 
-- **Document Upload & Processing:** Upload course documents (PDFs) to the backend for indexing.
-- **Semantic Search:** Uses FAISS for fast document retrieval.
-- **AI Chatbot:** Ask questions about your uploaded documents and get context-aware answers.
-- **Modern Web UI:** Built with Next.js for a responsive and user-friendly experience.
+## Why this project
 
-## Project Structure
+- Retrieval over local docs with FAISS (`server/docs/`)
+- FastAPI backend for chat APIs
+- Next.js + Clerk frontend for secure sign-in
+- Firestore-backed user chat history
 
-```
-client/   # Frontend (Next.js)
-server/   # Backend (Python FastAPI, FAISS, document processing)
-```
+## Quickstart
 
-## Setup Instructions
+### 1. Add environment files
 
-### 1. Clone the Repository
-
-```bash
-git clone <your-repo-url>
-cd gdg-rag
-```
-
-### 2. Backend Setup (Python)
-
-### .env content:
-```sh
-OPENROUTER_API_KEY=
-MODEL=
-```
-
-### firebase_credentials.json
-
-Follow [this link](https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments) to generate a credentials file. After that, place it in your /server directory and rename as firebase_credentials.json
-
-1. **Install dependencies:**
-   ```bash
-   cd server
-   pip install -r requirements.txt
-   ```
-2. **Process documents:**
-   - Place your course PDFs in `server/docs/`.
-   - Run the following to index documents:
-     ```bash
-     python process.py
-     ```
-3. **Start the backend server:**
-   ```bash
-   uvicorn app:app --reload
-   ```
-   The backend will be available at `http://localhost:8000`.
-
-### 3. Frontend Setup (Next.js)
-
-### .env.local content:
-
-Follow [this link](https://dashboard.clerk.com/~/api-keys) to get your public and secret key
+`server/.env`
 
 ```sh
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-# CLERK_OAUTH_KEY=(Optional)
+OPENROUTER_API_KEY=your_key_here
+MODEL=your_model_name
+```
 
+`client/.env.local`
+
+```sh
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_publishable_key
+CLERK_SECRET_KEY=your_secret_key
 NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
 ```
 
-1. **Install dependencies:**
-   ```bash
-   cd ../client
-   npm install
-   ```
-2. **Start the frontend server:**
-   ```bash
-   npm run dev
-   ```
-   The frontend will be available at `http://localhost:3000`.
+Also place your Firebase Admin credentials at `server/firebase_credentials.json`.
 
-## Usage
+### 2. Index your docs
 
-- Upload your course documents via the backend or place them in `server/docs/` and re-run `python process.py`.
-- Ask questions in the web UI about your uploaded documents.
-- The chatbot will retrieve relevant information and generate answers using the indexed content.
+Put PDFs or text files in `server/docs/`, then run:
 
-## Notes
+```bash
+cd server
+pip install -r requirements.txt
+python process.py
+```
 
-- Ensure both frontend and backend servers are running for full functionality.
-- Re-run `python process.py` whenever you add new documents to `server/docs/`.
-- The FAISS index and cache are stored in `server/faiss_index/` and `server/docs_cache.pkl`.
+### 3. Run backend
+
+```bash
+uvicorn app:app --reload
+```
+
+Backend: `http://localhost:8000`
+
+### 4. Run frontend
+
+```bash
+cd ../client
+npm install
+npm run dev
+```
+
+Frontend: `http://localhost:3000`
+
+## Docker (optional)
+
+```bash
+docker compose -f docker-compose.dev.yml up --build
+```
+
+App via nginx: `http://localhost:8080`
+
+## Heads up
+
+- Re-run `python process.py` whenever docs change.
+- Backend expects the FAISS index to exist before startup.
