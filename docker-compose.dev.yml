@@ -1,5 +1,4 @@
 services:
-  # TODO: optimize client create time
   client:
     build:
       context: ./client/
@@ -8,7 +7,9 @@ services:
       - NEXT_PUBLIC_BACKEND_URL=/api/
     volumes:
       - ./client/:/usr/src/app
-      - /usr/src/app/node_modules
+      # This named volume is to prevent 
+      # node modules from being deleted in the cotainer
+      - client_node_modules:/usr/src/app/node_modules
     container_name: gdg-client-dev
 
   server:
@@ -34,4 +35,5 @@ services:
       - client
       - server
 
-    
+volumes:
+  client_node_modules:
