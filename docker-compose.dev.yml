@@ -17,7 +17,8 @@ services:
       dockerfile: dev.Dockerfile
     env_file:
       - ./server/.env
-    # TODO: Add bind mount
+    volumes:
+      - ./server/:/app
     container_name: gdg-server-dev
     
 
