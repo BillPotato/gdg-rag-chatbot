@@ -1,0 +1,38 @@
+services:
+  client:
+    build:
+      context: ./client/
+      dockerfile: Dockerfile
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=/api/
+    container_name: gdg-client-prod
+
+  server:
+    build:
+      context: ./server/
+      dockerfile: Dockerfile
+    env_file:
+      - ./server/.env
+    container_name: gdg-server-prod
+
+    healthcheck:
+      # ping the FastAPI openapi route to check its health
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://127.0.0.1:8000/openapi.json\")' || exit 1"]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+      start_period: 15s
+    
+
+  nginx:
+    image: nginx:1.29-alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    container_name: reverse_proxy
+    depends_on:
+      client:
+        condition: service_started
+      server:
+        condition: service_healthy
