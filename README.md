@@ -72,3 +72,8 @@ App via nginx: `http://localhost:8080`
 
 - Re-run `python process.py` whenever docs change.
 - Backend expects the FAISS index to exist before startup.
+
+## TODOs
+
+- Add automated deployment workflow
+- Implement document upload system
