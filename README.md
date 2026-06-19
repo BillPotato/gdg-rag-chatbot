@@ -2,14 +2,7 @@
 
 A study-focused AI chatbot that combines RAG + authentication + persistent chat history.
 
-Ask questions about your course files, get concise answers from an OpenRouter model, and keep each user's chat history in Firestore.
-
-## Why this project
-
-- Retrieval over local docs with FAISS (`server/docs/`)
-- FastAPI backend for chat APIs
-- Next.js + Clerk frontend for secure sign-in
-- Firestore-backed user chat history
+Deployed via Oracle Cloud VPS and NGINX Reverse Proxy.
 
 ## Quickstart
 
